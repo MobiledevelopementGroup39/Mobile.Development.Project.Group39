@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>All Images</h1>
+<a href="{% url 'upload_image' %}">Upload New Image</a>
+<ul>
+    {% for image in images %}
+        <li>
+            <h3>{{ image.title }}</h3>
+            <p>Uploaded by: {{ image.uploaded_by }}</p>
+            <img src="{{ image.image.url }}" width="300">
+            
+            <p>Likes: {{ image.total_likes }} | Dislikes: {{ image.total_dislikes }}</p>
+            <a href="{% url 'like_image' image.id %}">👍 Like</a> | 
+            <a href="{% url 'dislike_image' image.id %}">👎 Dislike</a>
+
+            <h4>Comments:</h4>
+            <ul>
+                {% for comment in image.comments.all %}
+                    <li>{{ comment.user.username }}: {{ comment.text }}</li>
+                {% endfor %}
+            </ul>
+            <form method="post" action="{% url 'add_image_comment' image.id %}">
+                {% csrf_token %}
+                <input type="text" name="text" placeholder="Add a comment" required>
+                <button type="submit">Comment</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
