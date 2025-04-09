@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>RecipeTutor</title>
+</head>
+<body>
+    <nav>
+        {% if user.is_authenticated %}
+            <a href="">Edit Profile</a> | 
+            <a href="">Logout</a>
+        {% else %}
+            <a href="">Login</a> |
+            <a href="">Register</a>
+        {% endif %}
+    </nav>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
