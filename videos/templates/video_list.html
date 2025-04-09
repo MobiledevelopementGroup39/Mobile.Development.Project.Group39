@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>All Videos</h1>
+<a href="{% url 'upload_video' %}">Upload New Video</a>
+<ul>
+    {% for video in videos %}
+        <li>
+            <h3>{{ video.title }}</h3>
+            <p>Uploaded by: {{ video.uploaded_by }}</p>
+            <video width="400" controls>
+                <source src="{{ video.video_file.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p>Likes: {{ video.total_likes }} | Dislikes: {{ video.total_dislikes }}</p>
+            <a href="{% url 'like_video' video.id %}">👍 Like</a> | 
+            <a href="{% url 'dislike_video' video.id %}">👎 Dislike</a>
+            
+            <h4>Comments:</h4>
+            <ul>
+                {% for comment in video.comments.all %}
+                    <li>{{ comment.user.username }}: {{ comment.text }}</li>
+                {% endfor %}
+            </ul>
+            <form method="post" action="{% url 'add_video_comment' video.id %}">
+                {% csrf_token %}
+                <input type="text" name="text" placeholder="Add a comment" required>
+                <button type="submit">Comment</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
