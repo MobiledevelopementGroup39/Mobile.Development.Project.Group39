@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "726192666775",
+    "firebase_url": "https://videoplayer-f895b-default-rtdb.firebaseio.com",
+    "project_id": "videoplayer-f895b",
+    "storage_bucket": "videoplayer-f895b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726192666775:android:a7917a8738ddd099a151d2",
+        "android_client_info": {
+          "package_name": "com.example.practice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEBn9xbgZLzVIlwVCMOPoxBu5otFnrZZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726192666775:android:29d70ddfbdce7b21a151d2",
+        "android_client_info": {
+          "package_name": "com.example.videoplayer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEBn9xbgZLzVIlwVCMOPoxBu5otFnrZZg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
