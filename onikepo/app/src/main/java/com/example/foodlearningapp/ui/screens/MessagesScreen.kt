@@ -21,17 +21,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.foodlearningapp.data.CommentDto
+import com.example.foodlearningapp.network.RetrofitClient
 import com.example.foodlearningapp.ui.theme.FoodLearningAppTheme
 import com.example.foodlearningapp.ui.theme.OrangeCustom
+import kotlinx.coroutines.launch
+import android.util.Log
 
 @Composable
-fun CommentsScreen(navController: NavController) { // Accept NavController as a parameter
+fun CommentsScreen(navController: NavController) {
+    var comments by remember { mutableStateOf<List<CommentDto>>(emptyList()) }
+    var loading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = true) { // Run once when the composable is created
+        coroutineScope.launch {
+            try {
+                val response = RetrofitClient.apiService.getComments().execute()
+                if (response.isSuccessful) {
+                    comments = response.body() ?: emptyList()
+                    loading = false
+                } else {
+                    error = "Failed to fetch comments: ${response.code()}"
+                    loading = false
+                    Log.e("CommentsScreen", "Failed to fetch comments: ${response.code()} - ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                error = "Network error: ${e.message}"
+                loading = false
+                Log.e("CommentsScreen", "Network error: ${e.message}")
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Follow") },
                 actions = {
-                    IconButton(onClick = { navController.navigate("search") }) { // Navigate to "search" on click
+                    IconButton(onClick = { navController.navigate("search") }) {
                         Icon(Icons.Default.Search, contentDescription = "Search")
                     }
                 },
@@ -53,32 +82,37 @@ fun CommentsScreen(navController: NavController) { // Accept NavController as a 
             Spacer(modifier = Modifier.height(16.dp))
             Text("Comments & Mentions", fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-            ) {
-                items(sampleComments) { comment ->
-                    CommentItem(comment)
+
+            if (loading) {
+                CircularProgressIndicator() // Show loading indicator
+            } else if (error != null) {
+                Text("Error: $error") // Display error message
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(comments) { commentDto ->
+                        CommentItem(commentDto = commentDto) // Directly pass commentDto
+                    }
                 }
             }
         }
     }
 }
 
-// Sample data
-data class Comment(val username: String, val message: String, val color: Color)
+// Helper function to generate a random color for the preview
+fun getRandomColor(): Color {
+    return Color(
+        red = kotlin.random.Random.nextFloat(),
+        green = kotlin.random.Random.nextFloat(),
+        blue = kotlin.random.Random.nextFloat(),
+        alpha = 1.0f
+    )
+}
 
-val sampleComments = listOf(
-    Comment("User A", "Hi, how are you?", Color.Green),
-    Comment("User B", "Hello!", Color.Magenta),
-    Comment("User C", "Interesting post.", Color.Blue),
-    Comment("User D", "Agreed!", Color.Yellow),
-    Comment("User E", "Thanks for sharing.", Color.Cyan),
-    Comment("User F", "Cool!", Color.LightGray)
-)
-
-// Comment Item
+// Comment Item now accepts CommentDto
 @Composable
-fun CommentItem(comment: Comment) {
+fun CommentItem(commentDto: CommentDto) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -88,29 +122,25 @@ fun CommentItem(comment: Comment) {
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(comment.color, shape = CircleShape),
+                .background(getRandomColor(), shape = CircleShape), // Using getRandomColor for UI
             contentAlignment = Alignment.Center
         ) {
-            Text(text = comment.username.first().toString().uppercase(), color = Color.White)
+            Text(text = commentDto.username.first().toString().uppercase(), color = Color.White)
         }
         Spacer(modifier = Modifier.width(8.dp))
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(comment.username, fontWeight = FontWeight.Bold)
-            Text(comment.message)
+            Text(commentDto.username, fontWeight = FontWeight.Bold)
+            Text(commentDto.message)
         }
     }
 }
-
-// Removed the BottomNavigationBar here as it should be defined in a common location
-// and receive the NavController from the parent composable (like MyApp in MainActivity).
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewCommentsScreen() {
     FoodLearningAppTheme {
-        // Provide a dummy NavController for the preview
         CommentsScreen(navController = rememberNavController())
     }
 }
