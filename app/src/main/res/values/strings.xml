@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FoodTutorial</string>
+    <string name="desc_main_image">Mapotofu</string>
+    <!-- top buttons description -->
+    <string name="desc_settings_button">setting</string>
+    <string name="desc_search_button">search</string>
+
+    <!-- bottom buttons description -->
+    <string name="desc_like_button">favorite</string>
+    <string name="desc_home_button">homepage</string>
+    <string name="desc_add_button">post</string>
+    <string name="desc_chat_button">comments</string>
+    <string name="desc_profile_button">users</string>
+</resources>
