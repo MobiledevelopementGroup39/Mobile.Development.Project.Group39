@@ -1,5 +1,6 @@
 package com.example.foodlearningapp.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,18 +18,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.foodlearningapp.ui.theme.OrangeCustom
+import com.example.foodlearningapp.data.TutorialPost
+import com.example.foodlearningapp.network.RetrofitClient
 import com.example.foodlearningapp.ui.theme.FoodLearningAppTheme
+import com.example.foodlearningapp.ui.theme.OrangeCustom
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @Composable
-fun PostScreen(navController: NavController) { // Accept NavController as a parameter
+fun PostScreen(navController: NavController) {
     FoodLearningAppTheme {
         Scaffold(
             topBar = {
                 TopAppBar(
                     title = { Text("Follow") },
                     actions = {
-                        IconButton(onClick = { navController.navigate("search") }) { // Navigate to "search" on click
+                        IconButton(onClick = { navController.navigate("search") }) {
                             Icon(Icons.Default.Search, contentDescription = "Search")
                         }
                     },
@@ -41,15 +47,19 @@ fun PostScreen(navController: NavController) { // Accept NavController as a para
                 )
             },
             bottomBar = {
-                // You might have a BottomNavigationBar here in your actual layout
-                // If so, ensure it also receives the navController
+                // BottomNavigationBar (if you have one)
             }
         ) { paddingValues ->
+            var title by remember { mutableStateOf("") }
+            var text by remember { mutableStateOf("") }
+            var uploadMessage by remember { mutableStateOf("") }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally // Center items horizontally
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Click + to publish your tutorial")
@@ -58,13 +68,12 @@ fun PostScreen(navController: NavController) { // Accept NavController as a para
                         .fillMaxWidth()
                         .height(100.dp)
                         .background(Color.LightGray)
-                        .clickable { /* Upload Image Action */ },
+                        .clickable { /* Upload Image Action - Implement this later */ },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(Icons.Default.Link, contentDescription = "Upload", tint = Color.Black)
                 }
                 Spacer(modifier = Modifier.height(35.dp))
-                var title by remember { mutableStateOf("") }
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
@@ -72,13 +81,44 @@ fun PostScreen(navController: NavController) { // Accept NavController as a para
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                var text by remember { mutableStateOf("") }
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
                     label = { Text("Text") },
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(onClick = {
+                    val tutorialPost = TutorialPost(title = title, text = text)
+                    RetrofitClient.apiService.createTutorial(tutorialPost).enqueue(object : Callback<com.example.foodlearningapp.data.PostResponse> {
+                        override fun onResponse(
+                            call: Call<com.example.foodlearningapp.data.PostResponse>,
+                            response: Response<com.example.foodlearningapp.data.PostResponse>
+                        ) {
+                            if (response.isSuccessful) {
+                                val postResponse = response.body()
+                                uploadMessage = postResponse?.message ?: "Tutorial uploaded successfully!"
+                                title = "" // Clear input fields after successful post
+                                text = ""
+                                Log.d("PostScreen", "Upload successful: ${postResponse?.message}")
+                            } else {
+                                uploadMessage = "Failed to upload tutorial. Error: ${response.code()}"
+                                Log.e("PostScreen", "Upload failed: ${response.code()} - ${response.errorBody()?.string()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<com.example.foodlearningapp.data.PostResponse>, t: Throwable) {
+                            uploadMessage = "Network error: ${t.message}"
+                            Log.e("PostScreen", "Network error: ${t.message}")
+                        }
+                    })
+                }) {
+                    Text("Publish Tutorial")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                if (uploadMessage.isNotEmpty()) {
+                    Text(uploadMessage)
+                }
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
@@ -89,7 +129,6 @@ fun PostScreen(navController: NavController) { // Accept NavController as a para
 @Composable
 fun PreviewPostScreen() {
     FoodLearningAppTheme {
-        // Provide a dummy NavController for the preview
         PostScreen(navController = rememberNavController())
     }
 }
