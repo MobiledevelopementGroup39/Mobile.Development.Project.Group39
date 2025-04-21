@@ -35,14 +35,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.practice.R
 import com.example.practice.api.allRecipeData
 import com.example.practice.elements.FixedButton
 import com.example.practice.elements.UserProfile
 import com.example.practice.pages.post.RecipePostsCard
+import com.google.gson.Gson
+import java.net.URLEncoder
 
 @Composable
-fun ProfileScreen(innerPadding: PaddingValues) {
+fun ProfileScreen(innerPadding: PaddingValues, navController: NavController) {
 
     Column(
         modifier = Modifier
@@ -57,7 +60,7 @@ fun ProfileScreen(innerPadding: PaddingValues) {
         Spacer(modifier = Modifier.height(13.dp))
         PostCollectsHistoryButton()
         Spacer(modifier = Modifier.height(6.dp))
-        PostCollectsHistory()
+        PostCollectsHistory(navController)
     }
 
 }
@@ -229,10 +232,23 @@ fun PostCollectsHistoryButton() {
     }
 
 }
-
-
+//@Composable
+//fun PostCollectsHistory() {
+//    LazyVerticalGrid(
+//        modifier = Modifier
+//            .padding(bottom = 6.dp),
+//        columns = GridCells.Fixed(2),
+//        contentPadding = PaddingValues(horizontal = 16.dp),
+//        verticalArrangement = Arrangement.spacedBy(16.dp),
+//        horizontalArrangement = Arrangement.spacedBy(16.dp),
+//    ) {
+//        items(allRecipeData) { item ->
+//            RecipePostsCard(recipe = item)
+//        }
+//    }
+//}
 @Composable
-fun PostCollectsHistory() {
+fun PostCollectsHistory(navController: NavController) {
     LazyVerticalGrid(
         modifier = Modifier
             .padding(bottom = 6.dp),
@@ -241,11 +257,18 @@ fun PostCollectsHistory() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(allRecipeData) { item ->
-            RecipePostsCard()
+        items(allRecipeData) { recipe ->
+            RecipePostsCard(
+                recipe = recipe,
+                onClick = {
+                    val recipeJson = URLEncoder.encode(Gson().toJson(recipe), "UTF-8")
+                    navController.navigate("detail/$recipeJson")
+                }
+            )
         }
     }
 }
+
 
 
 @Composable

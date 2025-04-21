@@ -1,19 +1,21 @@
 package com.example.practice.api
 
 import okhttp3.OkHttpClient
-import okhttp3.internal.platform.android.AndroidLogHandler.setLevel
+
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object AuthRetrofitInstance {
     object AuthRetrofitInstance {
 
         private const val BASE_URL = "http://192.168.0.103:8000/"
 
         // Logging interceptor for debugging requests/responses
+//        private val logging = HttpLoggingInterceptor().apply {
+//            setLevel(HttpLoggingInterceptor.Level.BODY)
+//        }
         private val logging = HttpLoggingInterceptor().apply {
-            setLevel(HttpLoggingInterceptor.Level.BODY)
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
         // OkHttpClient with logging
@@ -35,4 +37,3 @@ object AuthRetrofitInstance {
             retrofit.create(AuthApiService::class.java)
         }
     }
-}
