@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.practice.screen.HomeScreen
 import com.example.practice.screen.ProfileScreen
 import com.example.practice.screen.RecipeDetailScreen
-import com.example.practice.screen.TutorialScreen
+//import com.example.practice.screen.TutorialScreen
 import com.example.practice.ui.theme.PracticeTheme
 
 class MainActivity : ComponentActivity() {

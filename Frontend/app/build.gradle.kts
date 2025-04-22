@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation(libs.accompanist.flowlayout)
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

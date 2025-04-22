@@ -6,6 +6,9 @@ object Routes {
     const val PROFILE = "profile"
     const val TUTORIAL = "tutorial"
     const val SEARCH = "search"
+    const val COMMENT_SCREEN = "commentScreen"
+    const val POST_SCREEN = "post_screen"
+
 
     // If you have other pages：
     // const val PROFILE = "profile"

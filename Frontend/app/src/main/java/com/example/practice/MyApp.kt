@@ -17,7 +17,7 @@ import androidx.navigation.compose.*
 import com.example.practice.navitem.NavItem
 import com.example.practice.screen.HomeScreen
 import com.example.practice.screen.ProfileScreen
-import com.example.practice.screen.TutorialScreen
+//import com.example.practice.screen.TutorialScreen
 import com.example.practice.viewmodel.Recipe
 import com.example.practice.screen.RecipeDetailScreen
 import com.google.gson.Gson
@@ -25,15 +25,19 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 import androidx.navigation.navArgument
 import androidx.navigation.NavController
-
+import com.example.practice.pages.post.PostScreen
+import com.example.practice.screen.CommentScreen
+import com.example.practice.screen.SearchScreen
 
 
 @Composable
 fun TopBar(
+    navController: NavController,
+    setSelectedIndex: (Int) -> Unit,
     onDrawerClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
     onFollowersClick: () -> Unit = {},
-    onSearchClick: () -> Unit = {}
+//    onSearchClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -70,7 +74,10 @@ fun TopBar(
             tint = Color.Unspecified,
             modifier = Modifier
                 .size(24.dp)
-                .clickable { onSearchClick() }
+                .clickable {
+                    setSelectedIndex(-1) // 取消选中任何底部按钮
+                    navController.navigate(Routes.SEARCH)
+                }
         )
     }
 }
@@ -130,10 +137,12 @@ fun MyApp() {
             TopAppBar(
                 title = {
                     TopBar(
+                        navController = navController,
+                        setSelectedIndex = { selectedIndex = it },
                         onDrawerClick = { },
                         onExploreClick = { selectedIndex = 1 },
                         onFollowersClick = { selectedIndex = 4 },
-                        onSearchClick = { /* 预留 */ }
+
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(Color(0xFFf9B77C))
@@ -146,16 +155,27 @@ fun MyApp() {
                     1 -> {
                         navController.navigate(Routes.HOME) {
                             popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                                inclusive = true
                             }
                             launchSingleTop = true
                             restoreState = true
                         }
                     }
-                    3 -> {
-                        navController.navigate(Routes.TUTORIAL) {
+                    2 -> {
+                        navController.navigate(Routes.POST_SCREEN) {
                             popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+
+
+                    }
+                    }
+                    3 -> {
+                        navController.navigate(Routes.COMMENT_SCREEN) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -164,7 +184,7 @@ fun MyApp() {
                     4 -> {
                         navController.navigate(Routes.PROFILE) {
                             popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                                inclusive = true
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -200,9 +220,31 @@ fun MyApp() {
                     navController = navController
                 )
             }
-            composable(Routes.TUTORIAL) {
-                TutorialScreen(innerPadding)
+            composable(Routes.SEARCH) {
+                SearchScreen(innerPadding, navController)
             }
+
+            composable(Routes.POST_SCREEN) { backStackEntry ->
+                // 使用 innerPadding 来保证界面布局不会被底部导航栏遮挡
+                val innerPadding = PaddingValues(0.dp) // 或者传递父级的 padding
+                PostScreen(
+                    innerPadding = innerPadding,
+                    navController = navController,
+                    onBack = {
+                        navController.popBackStack() // 处理返回按钮
+                    },
+                    onPost = { title, content, videoUri, imageUri ->
+                        // 发布逻辑
+                        // 例如可以使用 viewModel 或直接提交数据
+                    }
+                )
+            }
+
+
+            composable(Routes.COMMENT_SCREEN) {
+                CommentScreen(innerPadding)
+            }
+
 
             composable(Routes.PROFILE) {
                 ProfileScreen(innerPadding, navController)
@@ -229,7 +271,7 @@ private fun ContentScreen(
 ) {
     when (selectedIndex) {
         1 -> HomeScreen(innerPadding, navController)
-        3 -> TutorialScreen(innerPadding)
+//        3 -> TutorialScreen(innerPadding)
         4 -> ProfileScreen(innerPadding, navController)
     }
 }

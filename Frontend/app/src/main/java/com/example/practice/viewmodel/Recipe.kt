@@ -4,35 +4,21 @@ data class Recipe(
     val id: String = "",
     val title: String = "",
     val description: String = "",
-//    val imageRes: String = "",
-    val imageRes: Int = 0,  // 用本地 drawable 图片资源 ID
-//    val reactionCount: Int = 0,
+    val imageRes: Int = 0, // 封面图 drawable 资源 ID
     val reactionCount: String = "",
     val videoUrl: String = "",
-    val videoShoots: String = ""
+    val videoShoots: String = "", // 图片名逗号分隔，如 "step1,step2"
+    val author: String = "",
+    val avatarRes: Int = 0 // 作者头像资源 ID
 )
-//data class Recipe(
-//    val id: Int,
-//    val title: String,
-//    val description: String,
-//    val imageRes: Int,
-//    val videoShoots: String,
-//    val reactionCount: String,
-//    val videoUrl: String = ""
-//)
-
-//data class Recipe(
-//    val id: String,
-//    val title: String,
-//    val description: String,
-//    val imageResId: Int,
-//    val author: String,
-//    val reactionCount: String
-//)
 //data class Recipe(
 //    val id: String = "",
 //    val title: String = "",
+//    val description: String = "",
+////    val imageRes: String = "",
+//    val imageRes: Int = 0,  // local drawable pictures ID
+////    val reactionCount: Int = 0,
+//    val reactionCount: String = "",
 //    val videoUrl: String = "",
-//    val videoShoots: String = "",
-//    val comments: String = ""
+//    val videoShoots: String = ""
 //)
